@@ -13,7 +13,9 @@ function HomePage() {
           sed do eiusmod tempor incididun
         </p>
       </div>
-      <div className="flex flex-row ">
+      <h3 className="text-center font-medium text-2xl">Popular Articles</h3>
+      <div className="grid md:grid-cols-3 gap-2.5 place-content-center md:place-content-center ">
+        <ArticleCard />
         <ArticleCard />
         <ArticleCard />
       </div>

@@ -1,48 +1,56 @@
 import React from "react";
+import { FaSearch, FaThumbsUp, FaComment, FaBookmark } from "react-icons/fa";
+import Button from "../components/Button";
 
-function ForumPage() {
+const ForumPage = () => {
   return (
-    <div>
-      ForumPage
-      <div className="grid grid-cols-2">
-        <div className="bg-green-800  h-100">
-          <p>This is this, haha</p>
+    <div className="flex flex-col lg:flex-row items-center lg:items-start lg:justify-center min-h-auto p-4 bg-white">
+      <p>The Agriverse Community</p>
+      {/* Main Content */}
+      <div className="w-full lg:w-3/5 p-4 bg-white rounded-lg shadow-md">
+        {/* Search Bar */}
+        <div className="flex items-center border border-gray-400 rounded-md p-2 mb-4 shadow-sm bg-gray-50">
+          <FaSearch className="text-gray-500" />
+          <input
+            type="text"
+            placeholder="Search posts..."
+            className="w-full bg-transparent outline-none pl-2"
+          />
         </div>
-        <div className="bg-white ">
-          <h1 className="pl-0.5 font-bold">VERDANT</h1>
-          <h2 className="pl-10 mt-3 text-2xl">Sign In</h2>
-          <div>
-            <label htmlFor="username">Username</label>
-            <p>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                placeholder="Enter Username"
-                className="border border-green-300 rounded-md  focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-            </p>
-            <label htmlFor="password">Password</label>
-            <p>
-              {" "}
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Enter password"
-                className="border border-green-300 rounded-md  focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-            </p>
-          </div>
-          <div>
-            <button className="bg-green-700 pt-1 pb-1.5 pl-7.5 pr-7.5 ml-10 mt-18 rounded-full text-white">
-              Log In
-            </button>
+
+        {/* Post Input */}
+        <div className="p-4 border border-gray-300 rounded-md shadow-md">
+          <input
+            type="text"
+            placeholder="Title of Question or Post"
+            className="w-full border border-gray-300 p-2 rounded-md mb-2"
+          />
+          <textarea
+            placeholder="Share your thoughts..."
+            className="w-full border border-gray-300 p-2 rounded-md h-24"
+          ></textarea>
+          <Button label="Post" className="mt-2 w-full" />
+        </div>
+
+        {/* Posts */}
+        <div className="mt-6 p-4 border border-gray-300 bg-gray-50 rounded-md shadow-sm">
+          <p className="text-gray-700">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          </p>
+          <hr className="mt-10" />
+          <div className="flex justify-between items-center text-gray-600 text-lg py-1">
+            <div className="flex space-x-4">
+              <FaThumbsUp className="cursor-pointer hover:text-green-600" />
+              <FaComment className="cursor-pointer hover:text-blue-600" />
+            </div>
+            <FaBookmark className="cursor-pointer hover:text-yellow-600" />
           </div>
         </div>
       </div>
+
+      {/* Sidebar */}
     </div>
   );
-}
+};
 
 export default ForumPage;

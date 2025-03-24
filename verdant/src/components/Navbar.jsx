@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { HiOutlineMenu, HiX, HiUserCircle } from "react-icons/hi";
+import { useLocation } from "react-router-dom";
+import Button from "./Button";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+  const isLandingPage = location.pathname === "/";
 
   return (
     <nav className="bg-white p-4 shadow-md sticky top-0 z-50 flex items-center">
@@ -25,7 +29,8 @@ const Navbar = () => {
           isOpen ? "block" : "hidden"
         }`}
       >
-        <Link to="/" className="block py-2 md:inline-block">
+        <Link to="/" className="block py-2 md:inline-block"></Link>
+        <Link to="/home" className="block py-2 md:inline-block">
           Home
         </Link>
         <Link to="/forum" className="block py-2 md:inline-block">
@@ -34,23 +39,30 @@ const Navbar = () => {
         <Link to="/article" className="block py-2 md:inline-block">
           Articles
         </Link>
-        <Link
-          to="/profile"
-          className="block py-2 md:inline-block md-hidden
-        "
-        >
+        <Link to="/profile" className="block py-2 md:inline-block, md:hidden">
           Profile
         </Link>
       </div>
-      <div className="hidden md:block ml-auto  ">
-        <Link to="/profile">
-          <HiUserCircle
-            size={38}
-            className="text-gray-700 hover:text-gray-900"
-          />
-        </Link>
-        <p className="">Jacob</p> {/*use {username} to import from firebase*/}
-      </div>
+      {isLandingPage ? (
+        <div>
+          <Link to="/login">
+            <Button label="Sign In" />
+          </Link>
+          {/*<Link to="/signup">
+            <Button label="Sign Up" />
+          </Link> */}
+        </div>
+      ) : (
+        <div className="hidden md:block ml-auto  ">
+          <Link to="/profile">
+            <HiUserCircle
+              size={38}
+              className="text-gray-700 hover:text-gray-900"
+            />
+          </Link>
+          <p className="">Jacob</p> {/*use {username} to import from firebase*/}
+        </div>
+      )}
     </nav>
   );
 };
