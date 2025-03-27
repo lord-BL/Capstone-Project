@@ -1,6 +1,7 @@
 import React from "react";
 import { FaSearch, FaThumbsUp, FaComment, FaBookmark } from "react-icons/fa";
 import Button from "../components/Button";
+import SearchBar from "../components/SearchBar";
 
 const ForumPage = () => {
   return (
@@ -9,17 +10,10 @@ const ForumPage = () => {
       {/* Main Content */}
       <div className="w-full lg:w-3/5 p-4 bg-white rounded-lg shadow-md">
         {/* Search Bar */}
-        <div className="flex items-center border border-gray-400 rounded-md p-2 mb-4 shadow-sm bg-gray-50">
-          <FaSearch className="text-gray-500" />
-          <input
-            type="text"
-            placeholder="Search posts..."
-            className="w-full bg-transparent outline-none pl-2"
-          />
-        </div>
+        <SearchBar placeholder="Search for posts..." />
 
         {/* Post Input */}
-        <div className="p-4 border border-gray-300 rounded-md shadow-md">
+        <div className="p-4 border border-gray-300 rounded-md shadow-md mt-3">
           <input
             type="text"
             placeholder="Title of Question or Post"
