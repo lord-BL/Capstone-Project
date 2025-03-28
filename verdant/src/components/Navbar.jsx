@@ -13,13 +13,17 @@ const Navbar = () => {
     <nav className="bg-white p-4 shadow-md sticky top-0 z-50 flex items-center">
       {/* Logo on the Left */}
       <div className="text-xl font-bold">
-        <Link to="/HomePage">VERDANT</Link>
+        <Link to="/home">VERDANT</Link>
       </div>
 
       {/* Hamburger Button on the Right (Mobile) */}
       <div className="ml-auto md:hidden">
         <button onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <HiX size={28} /> : <HiOutlineMenu size={28} />}
+          {isOpen ? (
+            <HiX size={28} className="cursor-pointer" />
+          ) : (
+            <HiOutlineMenu size={28} className="cursor-pointer" />
+          )}
         </button>
       </div>
 

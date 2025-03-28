@@ -27,19 +27,25 @@ const ForumPage = () => {
         </div>
 
         {/* Posts */}
-        <div className="mt-6 p-4 border border-gray-300 bg-gray-50 rounded-md shadow-sm">
-          <p className="text-gray-700">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          </p>
-          <hr className="mt-10" />
-          <div className="flex justify-between items-center text-gray-600 text-lg py-1">
-            <div className="flex space-x-4">
-              <FaThumbsUp className="cursor-pointer hover:text-green-600" />
-              <FaComment className="cursor-pointer hover:text-blue-600" />
+        {[1, 2, 3, 4].map((post, index) => (
+          <div
+            key={index}
+            className="mt-6 p-4 border border-gray-300 bg-gray-50 rounded-md shadow-sm"
+          >
+            <p className="text-gray-700">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Post #
+              {post}
+            </p>
+            <hr className="mt-10" />
+            <div className="flex justify-between items-center text-gray-600 text-lg py-1">
+              <div className="flex space-x-4">
+                <FaThumbsUp className="cursor-pointer hover:text-green-600" />
+                <FaComment className="cursor-pointer hover:text-blue-600" />
+              </div>
+              <FaBookmark className="cursor-pointer hover:text-yellow-600" />
             </div>
-            <FaBookmark className="cursor-pointer hover:text-yellow-600" />
           </div>
-        </div>
+        ))}
       </div>
 
       {/* Sidebar */}

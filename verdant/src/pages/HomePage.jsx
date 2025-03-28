@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ArticleCard from "../components/ArticleCard";
+import SearchBar from "../components/SearchBar";
 
 function HomePage() {
   const query =
@@ -42,7 +43,9 @@ function HomePage() {
           Discover the latest agricultural trends and insights.
         </p>
       </div>
-
+      <div className="pt-3 justify-center items-center flex">
+        <SearchBar placeholder="Enter Your Search..." />
+      </div>
       <h3 className="text-center font-medium text-2xl my-5">
         Popular Articles
       </h3>
@@ -56,6 +59,9 @@ function HomePage() {
             image={article.urlToImage}
           />
         ))}
+      </div>
+      <div className="m-3">
+        <h2 className="text-center font-bold text-2xl">Popular Discussions</h2>
       </div>
     </div>
   );
