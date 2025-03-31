@@ -1,37 +1,34 @@
-import { useState } from "react";
-import { FiSearch } from "react-icons/fi"; // Import search icon
-import Button from "./Button";
-const SearchBar = ({ onSearch, placeholder = "Search..." }) => {
-  const [query, setQuery] = useState("");
+import React, { useState } from "react";
+import { FaSearch } from "react-icons/fa";
 
-  const handleSearch = (e) => {
+const SearchBar = ({ placeholder = "Search...", onSearch }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (onSearch) onSearch(query);
+    if (onSearch) {
+      onSearch(searchTerm);
+    }
   };
 
   return (
     <form
-      onSubmit={handleSearch}
-      className="flex items-center border border-gray-500 rounded-lg px-3 py-2 w-full max-w-md bg-white shadow-sm focus-within:ring-2 focus-within:ring-green-300 transition"
+      onSubmit={handleSubmit}
+      className="flex items-center w-full md:w-3xl bg-white rounded-lg border border-gray-300 overflow-hidden shadow-sm"
     >
-      {/* Search Icon */}
-      <FiSearch className="text-gray-500 text-lg mr-2" />
-
-      {/* Search Input */}
       <input
         type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
         placeholder={placeholder}
-        className="flex-grow outline-none p-2 text-sm md:text-base bg-transparent"
+        className="w-full py-2 px-4 focus:outline-none"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
       />
-
-      {/* Submit Button */}
-      <Button
-        label="Search"
+      <button
         type="submit"
-        className="absolute right-1 top-1/2 transform -translate-y-1/2 px-3 py-1 text-xs md:text-sm lg:text-base bg-green-500 text-white rounded-md flex-shrink-0"
-      />
+        className="bg-green-600 text-white p-2 hover:bg-green-700 mr-1"
+      >
+        <FaSearch />
+      </button>
     </form>
   );
 };

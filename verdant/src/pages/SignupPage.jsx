@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import React from "react";
@@ -5,6 +6,7 @@ import { Link } from "react-router-dom";
 import Button from "../components/Button";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { signUPWithEmailAndPassword } from "../../services/login.service";
 
 const signupval = yup.object().shape({
   fullname: yup.string().required("Full name is required"),
@@ -17,6 +19,10 @@ const signupval = yup.object().shape({
 });
 
 function SignupPage() {
+  const [signUpData, setSignUpData] = useState({
+    email: "",
+    password: "",
+  });
   const navigate = useNavigate();
   const {
     register,
@@ -28,6 +34,8 @@ function SignupPage() {
 
   const onSubmit = (data) => {
     console.log(data);
+    signUPWithEmailAndPassword(signUpData.email, signUpData.password);
+    setSignUpData({ email: "", password: "" });
     navigate("/home"); // Redirect to home page after validation is successful
   };
 
@@ -71,6 +79,10 @@ function SignupPage() {
               {...register("email")}
               placeholder="Enter Email"
               className="border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 w-36 pl-1 m-1 shadow-md"
+              value={signUpData.email}
+              onChange={(e) =>
+                setSignUpData({ ...signUpData, email: e.target.value })
+              }
             />
             {errors.email && (
               <p className="text-red-500">{errors.email.message}</p>
@@ -84,6 +96,10 @@ function SignupPage() {
               id="password"
               {...register("password")}
               className="border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 w-36 pl-1 m-1 shadow-md"
+              value={signUpData.password}
+              onChange={(e) =>
+                setSignUpData({ ...signUpData, password: e.target.value })
+              }
             />
             {errors.password && (
               <p className="text-red-500">{errors.password.message}</p>
