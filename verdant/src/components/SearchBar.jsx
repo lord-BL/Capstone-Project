@@ -14,7 +14,7 @@ const SearchBar = ({ placeholder = "Search...", onSearch }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex items-center w-full md:w-3xl bg-white rounded-lg border border-gray-300 overflow-hidden shadow-sm"
+      className="flex items-center w-full md:w-xl bg-white rounded-lg border border-gray-300 overflow-hidden shadow-sm"
     >
       <input
         type="text"

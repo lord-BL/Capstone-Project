@@ -31,6 +31,13 @@ function HomePage() {
       "organic",
       "agri",
       "soil",
+      "maize",
+      "wheat",
+      "rice",
+      "food security",
+      "agribusiness",
+      "agro",
+      "yield",
     ];
 
     const titleLower = article.title?.toLowerCase() || "";
@@ -200,24 +207,27 @@ function HomePage() {
             <div className="text-center">Loading results...</div>
           ) : filteredResults.length > 0 ? (
             <div className="grid md:grid-cols-3 gap-2.5 place-content-center">
-              {filteredResults.map((item, index) =>
-                item.type === "news" ? (
+              {filteredResults.map((article, index) =>
+                article.type === "news" ? (
                   <ArticleCard
                     key={`search-${index}`}
-                    title={item.title}
-                    author={item.author || "Unknown"}
+                    title={article.title}
+                    article={article}
+                    author={article.author || "Unknown"}
                     image={
-                      item.urlToImage ||
+                      article.urlToImage ||
                       "https://via.placeholder.com/300x200?text=Agriculture+News"
                     }
                   />
                 ) : (
                   <div
-                    key={`forum-${item.id}`}
+                    key={`forum-${article.id}`}
                     className="border p-3 rounded-lg"
                   >
-                    <h4 className="font-bold">{item.title}</h4>
-                    <p className="text-sm text-gray-600">By: {item.author}</p>
+                    <h4 className="font-bold">{article.title}</h4>
+                    <p className="text-sm text-gray-600">
+                      By: {article.author}
+                    </p>
                     <span className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mt-2">
                       Forum Post
                     </span>
@@ -248,6 +258,7 @@ function HomePage() {
                 key={`popular-${index}`}
                 title={article.title}
                 author={article.author || "Unknown"}
+                article={article}
                 image={
                   article.urlToImage ||
                   "https://via.placeholder.com/300x200?text=Agriculture+News"

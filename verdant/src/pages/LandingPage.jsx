@@ -22,19 +22,19 @@ const LandingPage = () => {
             A vibrant community for farmers, agribusinesses, and enthusiasts.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-6">
-            <div className="p-4 shadow-lg rounded-lg bg-green-100">
+            <div className="p-4 shadow-lg rounded-lg bg-green-500 transition-all duration-500 ease-in-out hover:shadow-xl hover:scale-102">
               🌾 <h3 className="font-semibold">Community Forum</h3>
               <p className="text-sm text-gray-700">
                 Engage in discussions, ask questions, and share insights.
               </p>
             </div>
-            <div className="p-4 shadow-lg rounded-lg bg-green-100">
+            <div className="p-4 shadow-lg rounded-lg bg-green-500 transition-all duration-500 ease-in-out hover:shadow-xl hover:scale-102">
               📖 <h3 className="font-semibold">Educational Articles</h3>
               <p className="text-sm text-gray-700">
                 Stay informed with expert-written agricultural articles.
               </p>
             </div>
-            <div className="p-4 shadow-lg rounded-lg bg-green-100">
+            <div className="p-4 shadow-lg rounded-lg bg-green-500 transition-all duration-500 ease-in-out hover:shadow-xl hover:scale-102">
               🔎 <h3 className="font-semibold">Search & Discover</h3>
               <p className="text-sm text-gray-700">
                 Easily find relevant content and connect with experts.
@@ -55,7 +55,7 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
-      <section className="bg-green-700 text-white py-10 text-center">
+      <section className="bg-green-600 text-white py-10 text-center">
         <h2 className="text-2xl font-bold">
           Ready to Join the Future of Agriculture?
         </h2>

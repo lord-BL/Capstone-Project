@@ -1,6 +1,13 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-function ArticleCard({ title, author, image }) {
+function ArticleCard({ title, author, image, article }) {
+  const navigate = useNavigate(); // Must be used at the component level, not inside a function
+
+  const handleClick = () => {
+    navigate("/article-details", { state: { article } });
+  };
+
   return (
     <div className="w-72 h-96 rounded-lg bg-white border border-gray-200 shadow-md m-2 overflow-hidden transition-all duration-500 ease-in-out hover:shadow-xl hover:scale-102">
       <img
@@ -8,7 +15,6 @@ function ArticleCard({ title, author, image }) {
         src={image}
         alt="Article thumbnail"
       />
-
       <div className="p-4 flex flex-col justify-between h-56">
         <div className="overflow-hidden">
           <h3 className="font-medium text-gray-800 text-lg mb-2 line-clamp-2">
@@ -18,9 +24,13 @@ function ArticleCard({ title, author, image }) {
             {author}
           </p>
         </div>
-
         <div className="mt-auto">
-          <p className="text-sm text-gray-500">Read more</p>
+          <button
+            className="text-sm text-blue-500 hover:underline"
+            onClick={handleClick}
+          >
+            Read more...
+          </button>
         </div>
       </div>
     </div>

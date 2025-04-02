@@ -10,6 +10,7 @@ import Footer from "./components/Footer";
 import LoginPage from "./pages/LoginPage";
 import LandingPage from "./pages/LandingPage";
 import SignupPage from "./pages/SignupPage";
+import ArticleDetails from "./pages/ArticleDetails";
 function App() {
   return (
     <Router>
@@ -32,6 +33,7 @@ function MainContent() {
         <Route path="/article" element={<ArticlePage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/article-details" element={<ArticleDetails />} />
         <Route path="/signup" element={<SignupPage />} />
       </Routes>
 

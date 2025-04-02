@@ -8,7 +8,7 @@ import {
 } from "react-icons/fa";
 import Button from "../components/Button";
 import SearchBar from "../components/SearchBar";
-import { auth } from "../../src/config/firebase"; // Adjust path as needed
+import { auth } from "../../src/config/firebase";
 import {
   getAllPosts,
   createPost,
@@ -186,8 +186,6 @@ const ForumPage = () => {
 
     try {
       await toggleBookmark(postId);
-      // Note: We don't update UI here since bookmarks are stored in user document
-      // You could fetch the user's bookmarks and update a local state if needed
     } catch (err) {
       console.error("Error toggling bookmark:", err);
     }
