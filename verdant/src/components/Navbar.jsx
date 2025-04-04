@@ -64,7 +64,6 @@ const Navbar = () => {
               className="text-gray-700 hover:text-gray-900"
             />
           </Link>
-          <p className="">Jacob</p> {/*use {username} to import from firebase*/}
         </div>
       )}
     </nav>

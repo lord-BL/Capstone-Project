@@ -1,4 +1,6 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import {
   FaMapMarkerAlt,
   FaLeaf,
@@ -6,8 +8,34 @@ import {
   FaComment,
   FaUsers,
 } from "react-icons/fa";
+import { getAuth, signOut } from "firebase/auth";
 
 const ProfilePage = () => {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    const auth = getAuth();
+    signOut(auth)
+      .then(() => {
+        console.log("User signed out successfully");
+        localStorage.removeItem("userData"); // Optional: Clear local storage
+        navigate("/login"); // Redirect to login page
+      })
+      .catch((error) => {
+        console.error("Sign-out error:", error);
+        alert("Error signing out. Try again.");
+      });
+  };
+
+  const [userName, setUserName] = useState("");
+  useEffect(() => {
+    // Get user data from localStorage when component mounts
+    const userData = localStorage.getItem("userData");
+    if (userData) {
+      const parsedData = JSON.parse(userData);
+      setUserName(parsedData.fullname);
+    }
+  }, []);
+
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl">
       <div className="bg-white p-6 rounded-lg shadow-md mb-6">
@@ -16,7 +44,7 @@ const ProfilePage = () => {
             JF
           </div>
           <div className="flex-1 text-center sm:text-left">
-            <h2 className="text-2xl mb-1 font-semibold">John Farmer</h2>
+            <h2 className="text-2xl mb-1 font-semibold">{userName}</h2>
             <div className="flex justify-center sm:justify-start items-center text-gray-500 mb-2">
               <FaMapMarkerAlt className="h-4 w-4 mr-1 text-gray-600" />
               <span>Heartland County, Midwest</span>
@@ -33,8 +61,11 @@ const ProfilePage = () => {
               </span>
             </div>
           </div>
-          <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 w-full sm:w-auto">
-            Connect
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+          >
+            Logout
           </button>
         </div>
 

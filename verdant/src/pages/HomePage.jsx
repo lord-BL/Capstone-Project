@@ -141,6 +141,15 @@ function HomePage() {
     activeFilter === "all"
       ? searchResults
       : searchResults.filter((item) => item.type === activeFilter);
+  const [userName, setUserName] = useState("");
+  useEffect(() => {
+    // Get user data from localStorage when component mounts
+    const userData = localStorage.getItem("userData");
+    if (userData) {
+      const parsedData = JSON.parse(userData);
+      setUserName(parsedData.fullname);
+    }
+  }, []);
 
   return (
     <div>
@@ -149,7 +158,7 @@ function HomePage() {
                     bg-cover bg-center pb-25 md:pb-50 lg:pb-75 pt-6 flex flex-col items-center justify-center"
       >
         <h1 className="text-white text-2xl md:text-3xl lg:text-4xl font-bold">
-          Welcome to the Agriverse
+          Welcome to the Agriverse, {userName || "Farmer"}!
         </h1>
         <p className="text-white text-center">
           Discover the latest agricultural trends and insights.

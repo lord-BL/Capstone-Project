@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ArticleCard from "../components/ArticleCard";
 import Button from "../components/Button";
+import SearchBar from "../components/SearchBar";
 import {
   FiTrendingUp,
   FiClock,
@@ -8,46 +9,228 @@ import {
   FiFilter,
   FiChevronRight,
 } from "react-icons/fi";
-import { GiWheat, GiCorn, GiFruitBowl, GiCow } from "react-icons/gi";
+import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { db } from "../config/firebase"; // Make sure you have your Firebase config file
 
 const ArticlePage = () => {
   const [activeCategory, setActiveCategory] = useState("all");
 
-  // Mock data - replace with your actual data
-  const categories = [
-    { id: "all", name: "All", icon: <GiWheat /> },
-    { id: "crops", name: "Crops", icon: <GiCorn /> },
-    { id: "livestock", name: "Livestock", icon: <GiCow /> },
-    { id: "market", name: "Market", icon: <GiFruitBowl /> },
-  ];
+  // State for articles
+  const [recommendedArticles, setRecommendedArticles] = useState([]);
+  const [popularArticles, setPopularArticles] = useState([]);
+  const [recentArticles, setRecentArticles] = useState([]);
+  const [allArticles, setAllArticles] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState("all");
 
-  // Mock articles for demonstration - replace with your actual data
-  const mockArticles = {
-    recommended: Array(3)
-      .fill(null)
-      .map((_, i) => ({
-        id: `rec-${i}`,
-        title: `Recommended Article ${i + 1}`,
-        author: "By John Doe • April 1, 2025",
-        image: `/api/placeholder/400/240`,
-      })),
-    popular: Array(3)
-      .fill(null)
-      .map((_, i) => ({
-        id: `pop-${i}`,
-        title: `Popular Article ${i + 1}`,
-        author: "By Jane Smith • March 28, 2025",
-        image: `/api/placeholder/400/240`,
-      })),
-    recent: Array(3)
-      .fill(null)
-      .map((_, i) => ({
-        id: `rec-${i}`,
-        title: `Recent Article ${i + 1}`,
-        author: "By Mark Johnson • March 30, 2025",
-        image: `/api/placeholder/400/240`,
-      })),
+  // For News API
+  const query =
+    'agriculture OR farming OR crops OR agribusiness OR "food security" OR "sustainable farming" OR "agricultural technology"';
+  const pageSize = 20;
+  const apiKey = import.meta.env.VITE_NEWS_API_KEY;
+  const url = `https://newsapi.org/v2/everything?q=${query}&pageSize=${pageSize}&sortBy=relevancy&apiKey=${apiKey}`;
+
+  // Function to fetch articles from Firebase
+  const fetchFirebaseArticles = async () => {
+    setLoading(true);
+    try {
+      // Fetch recommended articles
+      const recommendedQuery = query(
+        collection(db, "articles"),
+        orderBy("recommendationScore", "desc"),
+        limit(3)
+      );
+      const recommendedSnapshot = await getDocs(recommendedQuery);
+      const recommendedData = recommendedSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setRecommendedArticles(recommendedData);
+
+      // Fetch popular articles
+      const popularQuery = query(
+        collection(db, "articles"),
+        orderBy("viewCount", "desc"),
+        limit(3)
+      );
+      const popularSnapshot = await getDocs(popularQuery);
+      const popularData = popularSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setPopularArticles(popularData);
+
+      // Fetch recent articles
+      const recentQuery = query(
+        collection(db, "articles"),
+        orderBy("publishedAt", "desc"),
+        limit(3)
+      );
+      const recentSnapshot = await getDocs(recentQuery);
+      const recentData = recentSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setRecentArticles(recentData);
+
+      // Store all articles for search functionality
+      const allFirebaseArticles = [
+        ...recommendedData,
+        ...popularData,
+        ...recentData,
+      ].filter(
+        (article, index, self) =>
+          index === self.findIndex((a) => a.id === article.id)
+      );
+      setAllArticles(allFirebaseArticles);
+    } catch (error) {
+      console.error("Error fetching articles from Firebase:", error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // Function to check if an article is agriculture-related
+  const isAgricultureRelated = (article) => {
+    const agKeywords = [
+      "agriculture",
+      "farming",
+      "crops",
+      "farm",
+      "harvest",
+      "livestock",
+      "sustainable",
+      "organic",
+      "agri",
+      "soil",
+      "maize",
+      "wheat",
+      "rice",
+      "food security",
+      "agribusiness",
+      "agro",
+      "yield",
+    ];
+
+    const titleLower = article.title?.toLowerCase() || "";
+    const descLower = article.description?.toLowerCase() || "";
+
+    return agKeywords.some(
+      (keyword) => titleLower.includes(keyword) || descLower.includes(keyword)
+    );
+  };
+
+  // Function to fetch articles from News API
+  const fetchNewsApiArticles = async (searchTerm = "") => {
+    setLoading(true);
+    try {
+      const searchUrl = searchTerm
+        ? `https://newsapi.org/v2/everything?q=${searchTerm} AND (${query})&pageSize=${pageSize}&sortBy=relevancy&apiKey=${apiKey}`
+        : url;
+
+      const response = await fetch(searchUrl);
+      const data = await response.json();
+
+      if (data.articles && data.articles.length > 0) {
+        const agArticles = data.articles.filter(isAgricultureRelated);
+        return agArticles;
+      } else {
+        console.error("No articles found:", data);
+        return [];
+      }
+    } catch (error) {
+      console.error("Error fetching articles from News API:", error);
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to handle search
+  const handleSearch = async (searchTerm) => {
+    if (!searchTerm.trim()) {
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    const newsApiResults = await fetchNewsApiArticles(searchTerm);
+
+    // Search in Firebase articles as well
+    const firebaseResults = allArticles.filter((article) => {
+      const titleMatch = article.title
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const descriptionMatch = article.description
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      return titleMatch || descriptionMatch;
+    });
+
+    //Combine results
+    const combinedResults = [...firebaseResults, ...newsApiResults];
+    setSearchResults(combinedResults);
+
+    // For now, only using News API results as specified
+    setSearchResults(newsApiResults);
+  };
+
+  // Initial data fetch
+  useEffect(() => {
+    fetchFirebaseArticles();
+  }, []);
+
+  // Function to render article card
+  const renderArticleCard = (article) => (
+    <ArticleCard
+      key={article.id}
+      title={article.title}
+      author={
+        article.author
+          ? `By ${article.author} • ${new Date(
+              article.publishedAt
+            ).toLocaleDateString()}`
+          : ""
+      }
+      image={
+        article.urlToImage || article.imageUrl || `/api/placeholder/400/240`
+      }
+      article={article}
+    />
+  );
+
+  // Function to render article list item
+  const renderArticleListItem = (article) => (
+    <div
+      key={article.id}
+      className="bg-white rounded-lg shadow-sm hover:shadow-md transition p-4 flex"
+    >
+      <img
+        src={
+          article.urlToImage || article.imageUrl || `/api/placeholder/400/240`
+        }
+        alt={article.title}
+        className="w-20 h-20 object-cover rounded-md"
+      />
+      <div className="ml-4">
+        <h3 className="font-medium text-gray-800 text-base line-clamp-2">
+          {article.title}
+        </h3>
+        <p className="text-gray-500 text-xs mt-1">
+          {article.author
+            ? `By ${article.author} • ${new Date(
+                article.publishedAt
+              ).toLocaleDateString()}`
+            : ""}
+        </p>
+        <button className="text-xs text-blue-500 hover:underline mt-2">
+          Read more...
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -77,139 +260,117 @@ const ArticlePage = () => {
           </div>
         </div>
 
-        {/* Category Pills */}
-        <div className="flex items-center overflow-x-auto pb-4 mb-6 no-scrollbar">
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              className={`flex items-center px-4 py-2 mr-3 rounded-full whitespace-nowrap ${
-                activeCategory === category.id
-                  ? "bg-green-600 text-white"
-                  : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
-              }`}
-              onClick={() => setActiveCategory(category.id)}
-            >
-              <span className="mr-2">{category.icon}</span>
-              {category.name}
-            </button>
-          ))}
-          <button className="flex items-center px-4 py-2 rounded-full bg-white text-gray-700 border border-gray-200 hover:bg-gray-50">
-            <FiFilter className="mr-2" /> Filter
-          </button>
+        {/* Search Bar */}
+        <div className="mb-2">
+          <SearchBar onSearch={handleSearch} />
         </div>
 
-        {/* Recommended Section */}
-        <section className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-              <FiStar className="mr-2 text-yellow-500" /> Recommended For You
-            </h2>
-            <a
-              href="#"
-              className="text-green-600 hover:text-green-700 font-medium flex items-center"
-            >
-              View All <FiChevronRight className="ml-1" />
-            </a>
-          </div>
-
-          <div className="flex flex-wrap justify-center">
-            {mockArticles.recommended.map((article) => (
-              <ArticleCard
-                key={article.id}
-                title={article.title}
-                author={article.author}
-                image={article.image}
-                article={article}
-              />
-            ))}
-          </div>
-        </section>
-
-        {/* Two Column Layout for Popular and Recent */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Popular Section */}
-          <section>
+        {/* Search Results */}
+        {isSearching && (
+          <section className="mb-12">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-800 flex items-center">
-                <FiTrendingUp className="mr-2 text-red-500" /> Popular Articles
+              <h2 className="text-2xl font-bold text-gray-800">
+                Search Results
               </h2>
-              <a
-                href="#"
-                className="text-green-600 hover:text-green-700 text-sm font-medium flex items-center"
-              >
-                More <FiChevronRight className="ml-1" />
-              </a>
             </div>
 
-            {/* Custom list layout for Popular/Recent sections */}
-            <div className="space-y-4">
-              {mockArticles.popular.map((article) => (
-                <div
-                  key={article.id}
-                  className="bg-white rounded-lg shadow-sm hover:shadow-md transition p-4 flex"
-                >
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    className="w-20 h-20 object-cover rounded-md"
-                  />
-                  <div className="ml-4">
-                    <h3 className="font-medium text-gray-800 text-base line-clamp-2">
-                      {article.title}
-                    </h3>
-                    <p className="text-gray-500 text-xs mt-1">
-                      {article.author}
-                    </p>
-                    <button className="text-xs text-blue-500 hover:underline mt-2">
-                      Read more...
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            {searchResults.length > 0 ? (
+              <div className="flex flex-wrap justify-center">
+                {searchResults.slice(0, 6).map(renderArticleCard)}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-500">
+                  No results found. Try another search term.
+                </p>
+              </div>
+            )}
           </section>
+        )}
 
-          {/* Recent Section */}
-          <section>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-800 flex items-center">
-                <FiClock className="mr-2 text-blue-500" /> Recent Updates
-              </h2>
-              <a
-                href="#"
-                className="text-green-600 hover:text-green-700 text-sm font-medium flex items-center"
-              >
-                More <FiChevronRight className="ml-1" />
-              </a>
-            </div>
-
-            <div className="space-y-4">
-              {mockArticles.recent.map((article) => (
-                <div
-                  key={article.id}
-                  className="bg-white rounded-lg shadow-sm hover:shadow-md transition p-4 flex"
+        {!isSearching && (
+          <>
+            {/* Recommended Section */}
+            <section className="mb-12">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+                  <FiStar className="mr-2 text-yellow-500" /> Recommended For
+                  You
+                </h2>
+                <a
+                  href="#"
+                  className="text-green-600 hover:text-green-700 font-medium flex items-center"
                 >
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    className="w-20 h-20 object-cover rounded-md"
-                  />
-                  <div className="ml-4">
-                    <h3 className="font-medium text-gray-800 text-base line-clamp-2">
-                      {article.title}
-                    </h3>
-                    <p className="text-gray-500 text-xs mt-1">
-                      {article.author}
-                    </p>
-                    <button className="text-xs text-blue-500 hover:underline mt-2">
-                      Read more...
-                    </button>
-                  </div>
+                  View All <FiChevronRight className="ml-1" />
+                </a>
+              </div>
+
+              <div className="flex flex-wrap justify-center">
+                {loading ? (
+                  <p>Loading recommended articles...</p>
+                ) : recommendedArticles.length > 0 ? (
+                  recommendedArticles.map(renderArticleCard)
+                ) : (
+                  <p>No recommended articles found.</p>
+                )}
+              </div>
+            </section>
+
+            {/* Two Column Layout for Popular and Recent */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Popular Section */}
+              <section>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-gray-800 flex items-center">
+                    <FiTrendingUp className="mr-2 text-red-500" /> Popular
+                    Articles
+                  </h2>
+                  <a
+                    href="#"
+                    className="text-green-600 hover:text-green-700 text-sm font-medium flex items-center"
+                  >
+                    More <FiChevronRight className="ml-1" />
+                  </a>
                 </div>
-              ))}
+
+                <div className="space-y-4">
+                  {loading ? (
+                    <p>Loading popular articles...</p>
+                  ) : popularArticles.length > 0 ? (
+                    popularArticles.map(renderArticleListItem)
+                  ) : (
+                    <p>No popular articles found.</p>
+                  )}
+                </div>
+              </section>
+
+              {/* Recent Section */}
+              <section>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-gray-800 flex items-center">
+                    <FiClock className="mr-2 text-blue-500" /> Recent Updates
+                  </h2>
+                  <a
+                    href="#"
+                    className="text-green-600 hover:text-green-700 text-sm font-medium flex items-center"
+                  >
+                    More <FiChevronRight className="ml-1" />
+                  </a>
+                </div>
+
+                <div className="space-y-4">
+                  {loading ? (
+                    <p>Loading recent articles...</p>
+                  ) : recentArticles.length > 0 ? (
+                    recentArticles.map(renderArticleListItem)
+                  ) : (
+                    <p>No recent articles found.</p>
+                  )}
+                </div>
+              </section>
             </div>
-          </section>
-        </div>
+          </>
+        )}
 
         {/* Newsletter Sign-up */}
         <section className="mt-12 bg-gradient-to-r from-green-700 to-green-600 rounded-xl p-8 text-white shadow-lg">
