@@ -8,7 +8,7 @@
 
 - **User Authentication** with Firebase and Zustand
 - **Discussion Forum** for sharing agricultural insights
-- **Articles & Blog Section** with curated agriculture-related content
+- **Articles Section** with curated agriculture-related content
 - **Search & Filtering** for better content discovery
 - **Responsive UI** for seamless experience across devices
 
@@ -16,7 +16,7 @@
 
 - **Frontend:** React, Zustand (for state management)
 - **Backend & Services:** Firebase
-- **APIs:** NewsAPI (for agriculture-related news), Unsplash API (for high-quality images)
+- **APIs:** NewsAPI (for agriculture-related news),
 - **State Management:** Zustand
 
 ## 📂 Project Structure
@@ -27,7 +27,8 @@ Verdant-Agriverse/
 │   ├── components/    # Reusable components (Navbar, Footer, etc.)
 │   ├── pages/         # Page components (Home, Forum, Articles, Login, etc.)
 │   ├── assets/        # Images, icons, styles
-│   ├── store/        # Zustand store
+│   ├── config/        # firebase configuration
+│   ├── services/      # forum service, login s
 │   ├── App.js        # Main App component
 │   ├── index.js      # Entry point
 │-- public/           # Static assets
@@ -56,7 +57,7 @@ npm start
 ## 📌 Upcoming Features
 
 - **Post Creation & Editing** for the forum
-- **Bookmarking & Liking Posts**
+- **fetching articles from db on firestore**
 - **Improved Search Functionality**
 
 ---
