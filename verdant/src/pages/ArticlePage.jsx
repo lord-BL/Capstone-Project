@@ -26,11 +26,11 @@ const ArticlePage = () => {
   const [activeFilter, setActiveFilter] = useState("all");
 
   // For News API
-  const query =
+  const newsApiQuery =
     'agriculture OR farming OR crops OR agribusiness OR "food security" OR "sustainable farming" OR "agricultural technology"';
   const pageSize = 20;
   const apiKey = import.meta.env.VITE_NEWS_API_KEY;
-  const url = `https://newsapi.org/v2/everything?q=${query}&pageSize=${pageSize}&sortBy=relevancy&apiKey=${apiKey}`;
+  const url = `https://newsapi.org/v2/everything?q=${newsApiQuery}&pageSize=${pageSize}&sortBy=relevancy&apiKey=${apiKey}`;
 
   // Function to fetch articles from Firebase
   const fetchFirebaseArticles = async () => {
@@ -127,7 +127,7 @@ const ArticlePage = () => {
     setLoading(true);
     try {
       const searchUrl = searchTerm
-        ? `https://newsapi.org/v2/everything?q=${searchTerm} AND (${query})&pageSize=${pageSize}&sortBy=relevancy&apiKey=${apiKey}`
+        ? `https://newsapi.org/v2/everything?q=${searchTerm} AND (${newsApiQuery})&pageSize=${pageSize}&sortBy=relevancy&apiKey=${apiKey}`
         : url;
 
       const response = await fetch(searchUrl);
@@ -195,7 +195,7 @@ const ArticlePage = () => {
           : ""
       }
       image={
-        article.urlToImage || article.imageUrl || `/api/placeholder/400/240`
+        article.urlToImage || article.imageURL || `/api/placeholder/400/240`
       }
       article={article}
     />
@@ -209,7 +209,7 @@ const ArticlePage = () => {
     >
       <img
         src={
-          article.urlToImage || article.imageUrl || `/api/placeholder/400/240`
+          article.urlToImage || article.imageURL || `/api/placeholder/400/240`
         }
         alt={article.title}
         className="w-20 h-20 object-cover rounded-md"
